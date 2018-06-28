@@ -5,6 +5,7 @@ def getQR():
 	print(uuAns[0])
 	if uuAns[1]==True:
 		print ('uuid is:'+uuAns[0])
+		
 	elif uuAns[1]==False:
 		print ("Get uuid falied , try to do it again")
 

@@ -1,3 +1,9 @@
+# Author GiganticGragonfly
+# NEED INTERNET CONNECTION
+# get uuid for WeChat(Tencent) login
+# getUuid return:(uuid,flag)
+# flag : Ture for getting uuid sucess
+
 import urllib.parse 
 import urllib.request 
 

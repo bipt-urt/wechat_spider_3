@@ -4,9 +4,7 @@
 import pickle
 import base64
 def deFace(faceID):
-	#faceID='b'+"'"+faceID+"'"
-	faceID=base64.b64decode(faceID[20:])
-	print(faceID)
+	faceData = base64.b64decode(faceID[20:]) #de sucess!!
 	pic = open('img\\face\head.jpg','wb')
-	pickle.dump(faceID,pic)
+	pic.write(faceData)
 	pic.close()

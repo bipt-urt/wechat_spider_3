@@ -33,14 +33,9 @@ def getFace(uuid):
 		time.sleep(1)
 		response = urllib.request.urlopen(url, data=data)
 		str=response.read().decode('utf-8')
-	faceID = str[37:2437] #Face ，base64编码，需要解码，再录入txt命名为jpg即可输出
+	faceID = str[37:2437]
 	faceDe.deFace(faceID)
-
-	
-
-
-	print(faceID)
-
+	return uuid
 
 def purtest(a):
 	print(a)

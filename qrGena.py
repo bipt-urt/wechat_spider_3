@@ -7,9 +7,9 @@
 
 import uuidGet
 import qrcode
-def getQR():
+def getQR(uuAns):
 	#print("getQR") 
-	uuAns = uuidGet.getUuid()
+	#uuAns = uuidGet.getUuid()
 	print(uuAns[0])
 	if uuAns[1]==True:
 		print ('uuid is:'+uuAns[0])

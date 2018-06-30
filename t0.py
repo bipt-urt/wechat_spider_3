@@ -3,7 +3,12 @@
 import qrGena
 import uuidGet
 import time
-qrAns = qrGena.getQR()
+import login
+####ALL PROGRAMME STARTS HERE
+uuAns = uuidGet.getUuid()
+qrAns = qrGena.getQR(uuAns)
 print("---"+qrAns[0])
-
 uuidGet.getFace(qrAns[0])
+str=login.login_prep(uuAns)
+login.login_prep(uuAns)
+login.loging(uuAns,str)

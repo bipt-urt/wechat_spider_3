@@ -2,7 +2,12 @@
 ##### for login fuction
 import urllib.parse 
 import urllib.request 
+import urllib
 import time
+
+from http.cookiejar import LWPCookieJar
+from http.cookiejar import CookieJar
+
 def login_prep(uuAns):
 	url="https://login.wx.qq.com/cgi-bin/mmwebwx-bin/login"
 	#r=-1243780070&_=1530252136911
@@ -23,25 +28,30 @@ def loging(uuAns,url):
 	if url.find('200') != -1:
 		ticket = url[101:136]
 		print(ticket)
-		url = url[38:183]
+		url = url[38:183]+ '&fun=new'#+"&fun=new&version=v2&lang=zh_CN",headers=header
 		print(url)
 		#act like a true explorer
-		headers = {
-		'GET https':'//weibo.cn/5273088553/info HTTP/1.1',
-		'Host':' weibo.cn',
-		'Connection':' keep-alive',
-		'Upgrade-Insecure-Requests':' 1',
-		'User-Agent':' Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36',
-		'Accept':' text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-		'Accept-Language':' zh-CN,zh;q=0.9',
-		#'Cookie':' _T_WM=c1913301844388de10cba9d0bb7bbf1e; SUB=_2A253Wy_dDeRhGeNM7FER-CbJzj-IHXVUp7GVrDV6PUJbkdANLXPdkW1NSesPJZ6v1GA5MyW2HEUb9ytQW3NYy19U; SUHB=0bt8SpepeGz439; SCF=Aua-HpSw5-z78-02NmUv8CTwXZCMN4XJ91qYSHkDXH4W9W0fCBpEI6Hy5E6vObeDqTXtfqobcD2D32r0O_5jSRk.; SSOLoginState=1516199821',
-		}
+		#user_agent = ' Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'
+		req = urllib.request.Request(url)
+		response = urllib.request.urlopen(req)
+		data = response.read().decode("utf-8","replace")
+		ptl = data.split("<pass_ticket>")
+		ptr = ptl[1].split("</pass_ticket>")
+		pass_ticket = ptr[0]
 
-		#params = {'loginicon':'true','uuid':uuAns[0],'tip':'1'}
-		#data= bytes(urllib.parse.urlencode(params), encoding='utf8')
-		response = urllib.request.urlopen(url).read()
-		print(response)
-		print(response.find('pass_ticket'))
+		skl = data.split("<skey>")
+		skr = skl[1].split("</skey>")
+		skeys = skr[0]
+
+		sidl = data.split("<wxsid>")
+		sidr = sidl[1].split("</wxsid>")
+		wxsid = sidr[0]
+
+		uinl = data.split("<wxuin>")
+		uinr = uinl[1].split("</wxuin>")
+		wxuin = uinr[0]
+
+		return (ticket,pass_ticket,skeys,wxsid,wxuin)
 	else :
 		print('---------failed!!! \n --------- getting ticket failed!!!')
 	return

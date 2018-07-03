@@ -7,6 +7,7 @@
 
 import uuidGet
 import qrcode
+import os
 def getQR(uuAns):
 	#print("getQR") 
 	#uuAns = uuidGet.getUuid()
@@ -16,6 +17,8 @@ def getQR(uuAns):
 		url = "https://login.weixin.qq.com/l/"+uuAns[0]
 		qrcode.make(url).save('img\gena\qr'+uuAns[0][0:9] +'.png')
 		print('---------QRcode image is already save as :\n---------img\gena\qr'+uuAns[0][0:9] +'.png')
+		QRImagePath = 'img\gena\qr'+uuAns[0][0:9] +'.png'
+		os.system('call %s' % QRImagePath)
 		return (uuAns[0],url)
 	elif uuAns[1]==False:
 		print ("Get uuid falied , try to do it again")

@@ -10,10 +10,12 @@ import json
 import http
 import pickle
 import base64
+import codecs
 from http import cookiejar
 from http.cookiejar import LWPCookieJar
 from http.cookiejar import CookieJar
 import urllib.error
+import deHtml
 
 
 def getUuid():
@@ -82,6 +84,7 @@ def login_prep(uuAns):
 		response = dealer.open(url, data=data)
 		str=response.read().decode('utf-8')
 	#faceID = str[37:2437]
+	print('-------def login_prep_______________OK')
 	return str
 
 def loging(uuAns,url):
@@ -90,7 +93,6 @@ def loging(uuAns,url):
 		ticket = url[101:136]
 		print(ticket)
 		url = url[38:181]+ '&fun=new'#+"&fun=new&version=v2&lang=zh_CN",headers=header
-		print(url)
 		#act like a true explorer
 		#user_agent = ' Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.84 Safari/537.36'
 		req = urllib.request.Request(url)
@@ -112,20 +114,29 @@ def loging(uuAns,url):
 		uinl = data.split("<wxuin>")
 		uinr = uinl[1].split("</wxuin>")
 		wxuin = uinr[0]
-
-		return (ticket,pass_ticket,skeys,wxsid,wxuin)
+		print('-------def loging_______________OK')
+		global tiks
+		tiks = (ticket,pass_ticket,skeys,wxsid,wxuin)
+		return tiks
 	else :
 		print('---------failed!!! \n --------- getting ticket failed!!!')
 	return
 
 def initing(uuAns,tiks):
 	print('----------initing')
-	url = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit"
-	cookie_s = str(cookie)
-	for item in cookie:
-		print('Name = %s' % item.name)
-		print('Value = %s' % item.value)
-	headers={
+	url = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit?pass_ticket="+tiks[1]
+	#for item in cookie:
+	#	print('Name = %s' % item.name)
+	#	print('Value = %s' % item.value)
+	postData = {
+		'BaseRequest': {
+			'Uin': tiks[4],
+			'Sid': tiks[3],
+			'Skey': tiks[2],
+			'DeviceID': 'e756936914066191'
+		}
+	}
+	header={
 	"Accept":"application/json, text/plain, */*",
 	"Accept-Encoding":"gzip, deflate, br",
 	"Accept-Language": "zh-CN,zh;q=0.9",
@@ -137,42 +148,23 @@ def initing(uuAns,tiks):
 	"Referer":"https://wx.qq.com/?&lang=zh_CN",
 	"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36"
 	}
-	handler = urllib.request.HTTPCookieProcessor(cookie)
-	opener = urllib.request.build_opener(handler)
 
-	postdata = urllib.parse.urlencode({'r':'-1529344762','pass_ticket':tiks[1],'lang':'zh_CN'}).encode()
-	postdata = bytes(postdata)
-
-	req = urllib.request.Request(url,postdata,headers)
-	print(opener.open(req).read().decode('utf-8'))
-
+	data = json.dumps(postData).encode('utf-8')
+	request = urllib.request.Request(url)
+	response = urllib.request.urlopen(request,data).read()
+	data = response.decode('utf-8')
+	
 	return response
-def initing2(uuAns,tiks):
-	LOGIN_URL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit'
-	values = {'r':'-1529344762','pass_ticket':tiks[1],'lang':'zh_CN'} # , 'submit' : 'Login'
-	postdata = urllib.parse.urlencode(values).encode()
-	user_agent = r'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36'
-	headers={
-	"Accept":"application/json, text/plain, */*",
-	"Accept-Encoding":"gzip, deflate, br",
-	"Accept-Language": "zh-CN,zh;q=0.9",
-	"Connection":"keep-alive",
-	"Content-Length": "149",
-	"Content-Type": "application/json;charset=UTF-8",
-	"Host":"wx.qq.com",
-	"Origin": "https://wx.qq.com",
-	"Referer":"https://wx.qq.com/?&lang=zh_CN",
-	"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36"
-	}
 
-	cookie_filename = 'cookie.txt'
-	cookie = http.cookiejar.MozillaCookieJar(cookie_filename)
-	handler = urllib.request.HTTPCookieProcessor(cookie)
-	opener = urllib.request.build_opener(handler)
-
-	request = urllib.request.Request(LOGIN_URL, postdata, headers)
-	get_response = opener.open(request)
-	print(get_response.read().decode())
+def getContact():
+	print("_______________________getContact")
+	url="https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetcontact?pass_ticket="+tiks[1]+"&skey="+tiks[2]  #&r=1530582947129&seq=0
+	request = urllib.request.Request(url)
+	response = dealer.open(request).read()
+	data = response.decode('utf-8',"replace")
+	with open('da.txt','wb') as f:
+		f.write(response)
+	print(len(data))
 
 
 def main():
@@ -191,7 +183,6 @@ def main():
 	for item in cookie:
 		print('Name = %s' % item.name)
 		print('Value = %s' % item.value)
-
 	uuAns = getUuid()
 	qrAns = getQR(uuAns)
 	print("---"+qrAns[0])
@@ -200,7 +191,11 @@ def main():
 	login_prep(uuAns)
 	tiks =loging(uuAns,str)
 	print(tiks)
-	initing2(uuAns,tiks)
+	initing(uuAns,tiks)
+	getContact()
+
+
+
 
 if __name__ == "__main__":
 	main()

@@ -2,6 +2,7 @@ import urllib.request
 import http.cookiejar
 import time
 import json
+import os
 
 wxToken = {}
 
@@ -61,11 +62,7 @@ def wxSendMsg(wxToken, sendTo, sendMessage):
 		},
 		'Scene': 0
 	}
-<<<<<<< HEAD
-	return urllib.request.urlopen(sendMessageURL, json.dumps(postData).encode('utf-8')).read().decode('utf-8')
-=======
 	return urllib.request.urlopen(sendMessageURL, json.dumps(postData, ensure_ascii=False).encode('utf-8')).read().decode('utf-8')
->>>>>>> 5e57a3b4dbdba5106463d18830bf400e750e7c5f
 
 def main():
 	cj = http.cookiejar.CookieJar()
@@ -86,7 +83,9 @@ def main():
 	with open(QRCodeFilename, "wb") as QRCode:
 		QRCode.write(wxGetQRCode(wxToken["loginQRToken"]))
 	print("已生成二维码图片" + str(QRCodeFilename) + "，请使用手机扫描")
-	
+	time.sleep(2)
+	os.system('call %s' % QRCodeFilename)
+
 	while True:
 		wxLoginStatus = wxGetLoginStatus(wxToken["loginQRToken"])
 		if wxLoginStatus[1] == "201":

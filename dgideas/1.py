@@ -9,6 +9,9 @@ def getR():
 	randomTicket = "-1577634346"
 	return randomTicket
 
+def dropHTML(_rawData):
+	return None
+
 def wxGetLoginToken():
 	jsLoginURL = "https://login.wx.qq.com/jslogin?appid=wx782c26e4c19acffb"
 	jsLogin = urllib.request.urlopen(jsLoginURL).read().decode("utf-8")
@@ -30,8 +33,8 @@ def getWxRedirectURL(rawLoginResponse):
 def wxRedirect(redirectURL):
 	return urllib.request.urlopen(redirectURL).read().decode("utf-8")
 
-def wxInit(passTicket, wxToken):
-	initURL = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit?r=-1577634346&pass_ticket=" + passTicket
+def wxInit(wxToken):
+	initURL = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit?r=-1577634346&pass_ticket=" + wxToken["pass_ticket"]
 	postData = {
 		'BaseRequest': {
 			'Uin': wxToken["wxuin"],
@@ -42,9 +45,9 @@ def wxInit(passTicket, wxToken):
 	}
 	return urllib.request.urlopen(initURL, json.dumps(postData).encode('utf-8')).read().decode('utf-8')
 
-def wxBatchGetContact(passTicket):
-	batchGetContactURL = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxbatchgetcontact?type=ex&r=1530585999833&pass_ticket=' + passTicket
-	return urllib.request.urlopen(batchGetContactURL).read().decode("utf-8")
+def wxGetContact(wxToken):
+	getContactURL = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetcontact?pass_ticket=" + wxToken["pass_ticket"] + "&r=" + getR() + "&seq=0&skey=" + wxToken["skey"]
+	return urllib.request.urlopen(getContactURL).read().decode("utf-8")
 
 def main():
 	cj = http.cookiejar.CookieJar()
@@ -83,11 +86,40 @@ def main():
 	wxToken["wxuin"] = wxWebWechatToken.split("<wxuin>")[1].split("</wxuin>")[0]
 	wxToken["pass_ticket"] = wxWebWechatToken.split("<pass_ticket>")[1].split("</pass_ticket>")[0]
 	print("获得微信网页版凭据信息：", end="")
+	wxToken.pop("redirectURL")
 	print(wxToken)
 	
-	print(wxInit(wxToken["pass_ticket"], wxToken))
+	wxInitData = json.loads(wxInit(wxToken))
+	wxToken["displayname"] = wxInitData["User"]["NickName"]
+	wxToken["username"] = wxInitData["User"]["UserName"]
+	print("===你好，" + wxToken["displayname"] + "！===")
+	print("最近联系人为:")
+	for recentCommunicatePerson in wxInitData["ContactList"]:
+		displayName = recentCommunicatePerson["RemarkName"] or recentCommunicatePerson["NickName"]
+		print("\t" + displayName)
 	
-	print(wxBatchGetContact(wxToken["pass_ticket"]))
+	wxContacts = json.loads(wxGetContact(wxToken))
+	print("载入共计" + str(wxContacts["MemberCount"]) + "位联系人")
+	
+	while True:
+		contactTo = input("请输入要发送消息的联系人:")
+		searchedList = []
+		for contacts in wxContacts["MemberList"]:
+			if contacts["NickName"].find(contactTo) != -1 or contacts["RemarkName"].find(contactTo) != -1:
+				searchedList.append({'NickName': contacts["NickName"], 'RemarkName': contacts["RemarkName"], 'UserName': contacts["UserName"]})
+		if len(searchedList):
+			print("找到以下联系人")
+			break
+		else:
+			print("\t未找到任何联系人")
+	for person in searchedList:
+		print("\t\t*" + person["NickName"] + " " + person["RemarkName"] + " " + person["UserName"])
+	if len(searchedList) > 1:
+		contactToId = input("请输入需要联系的人员或群ID:")
+	else:
+		contactToId = searchedList[0]["UserName"]
+	
+	wxMessage = input("请输入消息:\n")
 
 if __name__ == "__main__":
 	main()

@@ -33,21 +33,35 @@ def getWxRedirectURL(rawLoginResponse):
 def wxRedirect(redirectURL):
 	return urllib.request.urlopen(redirectURL).read().decode("utf-8")
 
+def buildBaseRequest(wxToken):
+	return {'Uin': wxToken["wxuin"], 'Sid': wxToken["wxsid"], 'Skey': wxToken["skey"], 'DeviceID': 'e756936914066191'}
+
 def wxInit(wxToken):
 	initURL = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit?r=-1577634346&pass_ticket=" + wxToken["pass_ticket"]
 	postData = {
-		'BaseRequest': {
-			'Uin': wxToken["wxuin"],
-			'Sid': wxToken["wxsid"],
-			'Skey': wxToken["skey"],
-			'DeviceID': 'e756936914066191'
-		}
+		'BaseRequest': buildBaseRequest(wxToken)
 	}
 	return urllib.request.urlopen(initURL, json.dumps(postData).encode('utf-8')).read().decode('utf-8')
 
 def wxGetContact(wxToken):
 	getContactURL = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetcontact?pass_ticket=" + wxToken["pass_ticket"] + "&r=" + getR() + "&seq=0&skey=" + wxToken["skey"]
 	return urllib.request.urlopen(getContactURL).read().decode("utf-8")
+
+def wxSendMsg(wxToken, sendTo, sendMessage):
+	sendMessageURL = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsendmsg?pass_ticket=" + wxToken["pass_ticket"]
+	postData = {
+		'BaseRequest': buildBaseRequest(wxToken),
+		'Msg': {
+			'ClientMsgId': getR(),
+			'Content': sendMessage,
+			'FromUserName': wxToken["username"],
+			'LocalID': getR(),
+			'ToUserName': sendTo,
+			'Type': '1'
+		},
+		'Scene': 0
+	}
+	return urllib.request.urlopen(sendMessageURL, json.dumps(postData).encode('utf-8')).read().decode('utf-8')
 
 def main():
 	cj = http.cookiejar.CookieJar()
@@ -120,6 +134,7 @@ def main():
 		contactToId = searchedList[0]["UserName"]
 	
 	wxMessage = input("请输入消息:\n")
+	wxSendMsg(wxToken, contactToId, wxMessage)
 
 if __name__ == "__main__":
 	main()

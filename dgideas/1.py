@@ -2,6 +2,10 @@ import urllib.request
 import http.cookiejar
 import time
 import json
+try:
+	import xlsxwriter
+except:
+	print("需要pip安装XlsxWrite第三方库")
 
 wxToken = {}
 
@@ -62,6 +66,13 @@ def wxSendMsg(wxToken, sendTo, sendMessage):
 		'Scene': 0
 	}
 	return urllib.request.urlopen(sendMessageURL, json.dumps(postData, ensure_ascii=False).encode('utf-8')).read().decode('utf-8')
+
+def exportContect(_contactsList, _exportFileName):
+	workbook = xlsxwriter.Workbook('export.xlsx')
+	worksheet = workbook.add_worksheet('Contacts')
+	sheetdata = ['UserName', 'RemarkName', 'Sex', 'City']
+	for person in _contactsList:
+		sheetdata
 
 def main():
 	cj = http.cookiejar.CookieJar()

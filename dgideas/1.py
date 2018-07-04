@@ -2,6 +2,7 @@ import urllib.request
 import http.cookiejar
 import time
 import json
+import os
 try:
 	import xlsxwriter
 except:
@@ -93,7 +94,9 @@ def main():
 	with open(QRCodeFilename, "wb") as QRCode:
 		QRCode.write(wxGetQRCode(wxToken["loginQRToken"]))
 	print("已生成二维码图片" + str(QRCodeFilename) + "，请使用手机扫描")
-	
+	time.sleep(2)
+	os.system('call %s' % QRCodeFilename)
+
 	while True:
 		wxLoginStatus = wxGetLoginStatus(wxToken["loginQRToken"])
 		if wxLoginStatus[1] == "201":

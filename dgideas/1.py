@@ -61,7 +61,11 @@ def wxSendMsg(wxToken, sendTo, sendMessage):
 		},
 		'Scene': 0
 	}
+<<<<<<< HEAD
 	return urllib.request.urlopen(sendMessageURL, json.dumps(postData).encode('utf-8')).read().decode('utf-8')
+=======
+	return urllib.request.urlopen(sendMessageURL, json.dumps(postData, ensure_ascii=False).encode('utf-8')).read().decode('utf-8')
+>>>>>>> 5e57a3b4dbdba5106463d18830bf400e750e7c5f
 
 def main():
 	cj = http.cookiejar.CookieJar()

@@ -188,6 +188,7 @@ def main():
 	wxToken["wxuin"] = wxWebWechatToken.split("<wxuin>")[1].split("</wxuin>")[0]
 	wxToken["pass_ticket"] = wxWebWechatToken.split("<pass_ticket>")[1].split("</pass_ticket>")[0]
 	print("获得微信网页版凭据信息：", end="")
+	print("我们已经获取您的所有信息")
 	wxToken.pop("redirectURL")
 	
 	wxInitData = json.loads(wxInit(wxToken))
@@ -270,3 +271,24 @@ def main():
 
 if __name__ == "__main__":
 	main()
+
+
+list7 = []
+with open('data.csv','r', encoding="gb18030") as f:
+	for line in f:
+		row = []
+		if line.find("@@") == -1:
+			continue
+		line = line.split(",")
+		for element in line:
+			row.append(element)
+		list7.append(row)
+#print(list7)
+
+
+with open("group.csv","w",encoding="gb18030",newline="") as groupcsv:
+	for i in list7:
+		response7=i
+		response7=str(response7)
+		print(response7)
+		groupcsv.write(response7+'\n')

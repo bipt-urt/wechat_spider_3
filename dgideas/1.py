@@ -109,7 +109,7 @@ def main():
 	wxInitData = json.loads(wxInit(wxToken))
 	wxToken["displayname"] = wxInitData["User"]["NickName"]
 	wxToken["username"] = wxInitData["User"]["UserName"]
-	print("===你好，" + wxToken["displayname"] + "！===")
+	print("==========你好，" + wxToken["displayname"] + "！==========")
 	print("最近联系人为:")
 	for recentCommunicatePerson in wxInitData["ContactList"]:
 		displayName = recentCommunicatePerson["RemarkName"] or recentCommunicatePerson["NickName"]

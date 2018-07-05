@@ -5,7 +5,7 @@
 		<script src="https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts.min.js"></script>
 	</head>
 	<body>
-		<!-- Îª ECharts ×¼±¸Ò»¸ö¾ß±¸´óĞ¡£¨¿í¸ß£©µÄ DOM -->
+		<!-- ä¸º ECharts å‡†å¤‡ä¸€ä¸ªå…·å¤‡å¤§å°ï¼ˆå®½é«˜ï¼‰çš„ DOM -->
 		<div id="main" style="width: 600px;height:400px;"></div>
 		<script>
 			var myChart = echarts.init(document.getElementById('main'));
@@ -17,11 +17,11 @@
 			legend: {
 				orient: 'vertical',
 				x: 'left',
-				data:["±±¾©", "½­ËÕ", "¹ã¶«", "ÉÏº£", "Õã½­", "ËÄ´¨", "ºÓ±±", "¹óÖİ", "England", "ÉÂÎ÷"]
+				data:["åŒ—äº¬", "æ±Ÿè‹", "å¹¿ä¸œ", "ä¸Šæµ·", "æµ™æ±Ÿ", "æ²³åŒ—", "å››å·", "England", "è´µå·", "æ¹–åŒ—"]
 			},
 			series: [
 				{
-					name:'·ÃÎÊÀ´Ô´',
+					name:'è®¿é—®æ¥æº',
 					type:'pie',
 					radius: ['50%', '70%'],
 					avoidLabelOverlap: false,
@@ -44,7 +44,7 @@
 						}
 					},
 					data: 
-[{"name": "±±¾©", "value": 165}, {"name": "½­ËÕ", "value": 11}, {"name": "¹ã¶«", "value": 10}, {"name": "ÉÏº£", "value": 8}, {"name": "Õã½­", "value": 8}, {"name": "ËÄ´¨", "value": 4}, {"name": "ºÓ±±", "value": 4}, {"name": "¹óÖİ", "value": 3}, {"name": "England", "value": 3}, {"name": "ÉÂÎ÷", "value": 2}]				}
+[{"name": "åŒ—äº¬", "value": 165}, {"name": "æ±Ÿè‹", "value": 11}, {"name": "å¹¿ä¸œ", "value": 10}, {"name": "ä¸Šæµ·", "value": 8}, {"name": "æµ™æ±Ÿ", "value": 8}, {"name": "æ²³åŒ—", "value": 4}, {"name": "å››å·", "value": 4}, {"name": "England", "value": 3}, {"name": "è´µå·", "value": 3}, {"name": "æ¹–åŒ—", "value": 2}]				}
 			]
 		};
 		myChart.setOption(option);

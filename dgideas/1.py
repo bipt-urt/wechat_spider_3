@@ -4,6 +4,7 @@ import time
 import json
 import os
 import random
+
 try:
 	import xlsxwriter
 except:
@@ -88,12 +89,15 @@ def exportContect(_contactsList, _exportFileName = "friendslist.xlsx"):
 		worksheet.write(row, 3, city, cell_format)
 		row += 1
 	workbook.close()
+	Filename = "friendslist.xlsx"
+	os.system('call %s' % Filename)
+
 
 def exportECharts(_locationStatics, _filename = "echarts.htm"):
 	chartsList = []
 	for location in _locationStatics:
 		chartsList.append({'value': location[1], 'name': location[0]})
-	with open(_filename, "w") as f:
+	with open(_filename, "w",encoding='utf-8') as f:
 		f.write("<!DOCTYPE html>\n")
 		f.write("<html>\n")
 		f.write("	<head>\n")
@@ -148,7 +152,8 @@ def exportECharts(_locationStatics, _filename = "echarts.htm"):
 		f.write("		</script>\n")
 		f.write("	</body>\n")
 		f.write("</html>\n")
-
+	
+	os.system('call %s' % "echarts.htm")
 def main():
 	cj = http.cookiejar.CookieJar()
 	opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
@@ -168,7 +173,7 @@ def main():
 	with open(QRCodeFilename, "wb") as QRCode:
 		QRCode.write(wxGetQRCode(wxToken["loginQRToken"]))
 	print("已生成二维码图片" + str(QRCodeFilename) + "，请使用手机扫描")
-	time.sleep(2)
+	time.sleep(1)
 	os.system('call %s' % QRCodeFilename)
 
 	while True:
@@ -262,9 +267,10 @@ def main():
 			task = False
 		if task == 'tune':
 			print('调试')
-			wer = True
+			Debug = True
+			task = 2133
 		else:
-			print("\n----------1 : 发送一条消息\n----------2 ：导出联系人列表\n----------3 ：联系人信息统计\n----------tune : 调试模式\n---------- 回车：退出\n")
+			print("\n----------1 : 发送一条消息\n----------2 ：导出联系人列表\n----------3 ：统计联系人信息(饼图)\n----------tune : 调试模式\n---------- 回车：退出\n")
 			task = input("请输入操作编号")
 
 

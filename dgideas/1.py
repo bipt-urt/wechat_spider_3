@@ -3,6 +3,7 @@ import http.cookiejar
 import time
 import json
 import os
+import random
 
 try:
 	import xlsxwriter
@@ -68,7 +69,7 @@ def wxSendMsg(wxToken, sendTo, sendMessage):
 	}
 	return urllib.request.urlopen(sendMessageURL, json.dumps(postData, ensure_ascii=False).encode('utf-8')).read().decode('utf-8')
 
-def exportContect(_contactsList, _exportFileName = "export.xlsx"):
+def exportContect(_contactsList, _exportFileName = "friendslist.xlsx"):
 	workbook = xlsxwriter.Workbook(_exportFileName)
 	worksheet = workbook.add_worksheet('Contacts')
 	sheetdata = [['UserName', 'RemarkName', 'Sex', 'City']]
@@ -172,7 +173,7 @@ def main():
 		elif wxLoginStatus[1] == "200":
 			print("确认登录微信")
 			wxToken["redirectURL"] = getWxRedirectURL(wxLoginStatus[0])
-			print("\t获得返回地址：" + wxToken["redirectURL"])
+			print("获得返回地址：" + wxToken["redirectURL"])
 			break
 		time.sleep(1)
 	
@@ -189,24 +190,17 @@ def main():
 	wxToken["username"] = wxInitData["User"]["UserName"]
 	print(wxToken)
 	
-	print("==========你好，" + wxToken["displayname"] + "！==========")
+	print("\n\n\n\n==========你好，" + wxToken["displayname"] + "！==========")
 	print("最近联系人为:")
 	for recentCommunicatePerson in wxInitData["ContactList"]:
 		displayName = recentCommunicatePerson["RemarkName"] or recentCommunicatePerson["NickName"]
 		print("\t" + displayName)
 	
 	wxContacts = json.loads(wxGetContact(wxToken))
-	print("载入共计" + str(wxContacts["MemberCount"]) + "位联系人")
+	print("\t目前共有" + str(wxContacts["MemberCount"]) + "位好友")
 	
-	task = False
-	print("\n----------1 : 发送一条消息\n----------2 ：导出联系人列表\n----------3 ：联系人信息统计\n----------tune : 调试模式\n---------- 回车：退出\n")
-	task = input("请输入数字编号")
-	
-
-	
-
-	
-	
+	task = 2133
+		
 	while task:
 		if task == '1':
 			print('发送消息')
@@ -236,10 +230,10 @@ def main():
 		if task == '2':
 			print("正在尝试导出联系人列表")
 			exportContect(wxContacts)
-			print("已导出联系人列表")
+			print("已导出联系人列表到friendslist.xlsx")
 
 		if task == '3':
-			print("正在针对联系人地域信息进行统计：", end="")
+			print("正在针对联系人地域信息进行统计：\n", end="")
 			locationStatic = {}
 			for person in wxContacts["MemberList"]:
 				personLocation = person["Province"]#+person["City"]
@@ -258,14 +252,14 @@ def main():
 			#print(countGroup())
 
 		if task == '0':
-			print('推出')
+			print('退出')
 			task = False
-		#if task == 'tune':
-		#	print('调试')
-		#	testing = True
+		if task == 'tune':
+			print('调试')
+			wer = True
 		else:
-			print("\n----------1 : 发送一条消息\n----------2 ：查看所有联系人及群组\n----------3 ：目前为止的骚操作\n----------0 或 回车：退出\n")
-			task = input("请输入数字编号")
+			print("\n----------1 : 发送一条消息\n----------2 ：导出联系人列表\n----------3 ：联系人信息统计\n----------tune : 调试模式\n---------- 回车：退出\n")
+			task = input("请输入操作编号")
 
 
 

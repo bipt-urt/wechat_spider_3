@@ -39,10 +39,10 @@ def wxRedirect(redirectURL):
 	return urllib.request.urlopen(redirectURL).read().decode("utf-8")
 
 def buildBaseRequest(wxToken):
-	return {'Uin': wxToken["wxuin"], 'Sid': wxToken["wxsid"], 'Skey': wxToken["skey"], 'DeviceID': 'e756936914066191'}
+	return {'Uin': wxToken["wxuin"], 'Sid': wxToken["wxsid"], 'Skey': wxToken["skey"], 'DeviceID': 'e756936914066192'}
 
 def wxInit(wxToken):
-	initURL = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit?r=-1577634346&pass_ticket=" + wxToken["pass_ticket"]
+	initURL = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit?r=" + getR() + "&pass_ticket=" + wxToken["pass_ticket"]
 	postData = {
 		'BaseRequest': buildBaseRequest(wxToken)
 	}
@@ -68,12 +68,80 @@ def wxSendMsg(wxToken, sendTo, sendMessage):
 	}
 	return urllib.request.urlopen(sendMessageURL, json.dumps(postData, ensure_ascii=False).encode('utf-8')).read().decode('utf-8')
 
-def exportContect(_contactsList, _exportFileName):
-	workbook = xlsxwriter.Workbook('export.xlsx')
+def exportContect(_contactsList, _exportFileName = "export.xlsx"):
+	workbook = xlsxwriter.Workbook(_exportFileName)
 	worksheet = workbook.add_worksheet('Contacts')
-	sheetdata = ['UserName', 'RemarkName', 'Sex', 'City']
-	for person in _contactsList:
-		sheetdata
+	sheetdata = [['UserName', 'RemarkName', 'Sex', 'City']]
+	for person in _contactsList["MemberList"]:
+		sheetdata.append([person["UserName"], person["RemarkName"] or person["NickName"], person["Sex"], person["Province"]+person["City"]])
+	row = 0
+	for username, remakename, sex, city in sheetdata:
+		worksheet.write(row, 0, username)
+		worksheet.write(row, 1, remakename)
+		worksheet.write(row, 2, sex)
+		worksheet.write(row, 3, city)
+		row += 1
+	workbook.close()
+
+def exportECharts(_locationStatics, _filename = "echarts.htm"):
+	chartsList = []
+	for location in _locationStatics:
+		chartsList.append({'value': location[1], 'name': location[0]})
+	with open(_filename, "w") as f:
+		f.write("<!DOCTYPE html>\n")
+		f.write("<html>\n")
+		f.write("	<head>\n")
+		f.write('		<meta charset="utf-8">\n')
+		f.write("		<script src=\"https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts.min.js\"></script>\n")
+		f.write("	</head>\n")
+		f.write("	<body>\n")
+		f.write("		<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->\n")
+		f.write("		<div id=\"main\" style=\"width: 600px;height:400px;\"></div>\n")
+		f.write("		<script>\n")
+		f.write("			var myChart = echarts.init(document.getElementById('main'));\n")
+		f.write("			var option = {\n")
+		f.write("			tooltip: {\n")
+		f.write("				trigger: 'item',\n")
+		f.write('				formatter: "{a} <br/>{b}: {c} ({d}%)"\n')
+		f.write("			},\n")
+		f.write("			legend: {\n")
+		f.write("				orient: 'vertical',\n")
+		f.write("				x: 'left',\n")
+		f.write("				data:" + json.dumps([ele[0] for ele in _locationStatics], ensure_ascii=False) + "\n")
+		f.write("			},\n")
+		f.write("			series: [\n")
+		f.write("				{\n")
+		f.write("					name:'访问来源',\n")
+		f.write("					type:'pie',\n")
+		f.write("					radius: ['50%', '70%'],\n")
+		f.write("					avoidLabelOverlap: false,\n")
+		f.write("					label: {\n")
+		f.write("						normal: {\n")
+		f.write("							show: false,\n")
+		f.write("							position: 'center'\n")
+		f.write("						},\n")
+		f.write("						emphasis: {\n")
+		f.write("							show: true,\n")
+		f.write("							textStyle: {\n")
+		f.write("								fontSize: '30',\n")
+		f.write("								fontWeight: 'bold'\n")
+		f.write("							}\n")
+		f.write("						}\n")
+		f.write("					},\n")
+		f.write("					labelLine: {\n")
+		f.write("						normal: {\n")
+		f.write("							show: false\n")
+		f.write("						}\n")
+		f.write("					},\n")
+		f.write("					data: \n")
+		f.write(json.dumps(chartsList, ensure_ascii=False))
+		f.write("				}\n")
+		f.write("			]\n")
+		f.write("		};\n")
+		f.write("		myChart.setOption(option);\n")
+		f.write("		</script>\n")
+		f.write("	</body>\n")
+		f.write("</html>\n")
 
 def main():
 	cj = http.cookiejar.CookieJar()
@@ -115,11 +183,12 @@ def main():
 	wxToken["pass_ticket"] = wxWebWechatToken.split("<pass_ticket>")[1].split("</pass_ticket>")[0]
 	print("获得微信网页版凭据信息：", end="")
 	wxToken.pop("redirectURL")
-	print(wxToken)
 	
 	wxInitData = json.loads(wxInit(wxToken))
 	wxToken["displayname"] = wxInitData["User"]["NickName"]
 	wxToken["username"] = wxInitData["User"]["UserName"]
+	print(wxToken)
+	
 	print("==========你好，" + wxToken["displayname"] + "！==========")
 	print("最近联系人为:")
 	for recentCommunicatePerson in wxInitData["ContactList"]:
@@ -130,8 +199,13 @@ def main():
 	print("载入共计" + str(wxContacts["MemberCount"]) + "位联系人")
 	
 	task = False
-	print("\n----------1 : 发送一条消息\n----------2 ：查看所有联系人及群组\n----------3 ：查看所有群组\n----------tune : 调试模式\n---------- 回车：退出\n")
+	print("\n----------1 : 发送一条消息\n----------2 ：导出联系人列表\n----------3 ：联系人信息统计\n----------tune : 调试模式\n---------- 回车：退出\n")
 	task = input("请输入数字编号")
+	
+
+	
+
+	
 	
 	while task:
 		if task == '1':
@@ -160,10 +234,27 @@ def main():
 
 			
 		if task == '2':
-			print('查看所有联系人及群组')
+			print("正在尝试导出联系人列表")
+			exportContect(wxContacts)
+			print("已导出联系人列表")
 
 		if task == '3':
-			print('查看所有群组')
+			print("正在针对联系人地域信息进行统计：", end="")
+			locationStatic = {}
+			for person in wxContacts["MemberList"]:
+				personLocation = person["Province"]#+person["City"]
+				if personLocation == "":
+					continue
+				if personLocation not in locationStatic:
+					locationStatic[personLocation] = 1
+				else:
+					locationStatic[personLocation] += 1
+			locationStaticTmp = sorted(locationStatic.items(), key=lambda x: x[1], reverse=True)
+			locationStatic = []
+			for element in locationStaticTmp[:10]:
+				locationStatic.append(element)
+			print(locationStatic)
+			exportECharts(locationStatic)
 			#print(countGroup())
 
 		if task == '0':

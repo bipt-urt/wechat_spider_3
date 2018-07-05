@@ -52,6 +52,7 @@ def getQR(uuAns):
 			print('---------QRcode image is already save as :\n---------img\gena\qr'+uuAns[0][0:9] +'.png')
 		QRImagePath = 'img\gena\qr'+uuAns[0][0:9] +'.png'
 		os.system('call %s' % QRImagePath)
+		
 		return (uuAns[0],url)
 	elif uuAns[1]==False:
 		if testing:

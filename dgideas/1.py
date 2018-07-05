@@ -188,7 +188,8 @@ def main():
 	wxToken["displayname"] = wxInitData["User"]["NickName"]
 	wxToken["username"] = wxInitData["User"]["UserName"]
 	print(wxToken)
-	print("===你好，" + wxToken["displayname"] + "！===")
+	
+	print("==========你好，" + wxToken["displayname"] + "！==========")
 	print("最近联系人为:")
 	for recentCommunicatePerson in wxInitData["ContactList"]:
 		displayName = recentCommunicatePerson["RemarkName"] or recentCommunicatePerson["NickName"]

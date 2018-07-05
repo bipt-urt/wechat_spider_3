@@ -72,21 +72,22 @@ def wxSendMsg(wxToken, sendTo, sendMessage):
 def exportContect(_contactsList, _exportFileName = "friendslist.xlsx"):
 	workbook = xlsxwriter.Workbook(_exportFileName)
 	worksheet = workbook.add_worksheet('Contacts')
-	sheetdata = [['UserName', 'RemarkName', 'Sex', 'City']]
+	sheetdata = [['姓名', '性别', '城市', '签名', '备注']]
 	for person in _contactsList["MemberList"]:
-		sheetdata.append([person["UserName"], person["RemarkName"] or person["NickName"], person["Sex"], person["Province"]+person["City"]])
+		sheetdata.append([person["NickName"], person["Sex"], person["Province"]+person["City"], person["Signature"], person["RemarkName"]])
 	row = 0
-	for username, remakename, sex, city in sheetdata:
+	for nickname, sex, city, signature, remarkname in sheetdata:
 		cell_format = workbook.add_format()
 		cell_format.set_pattern(1)  # This is optional when using a solid fill.
 		if row%2 == 0:
 			cell_format.set_bg_color('green')
 		else:
 			cell_format.set_bg_color('yellow')
-		worksheet.write(row, 0, username, cell_format)
-		worksheet.write(row, 1, remakename, cell_format)
-		worksheet.write(row, 2, sex, cell_format)
-		worksheet.write(row, 3, city, cell_format)
+		worksheet.write(row, 0, nickname, cell_format)
+		worksheet.write(row, 1, sex, cell_format)
+		worksheet.write(row, 2, city, cell_format)
+		worksheet.write(row, 3, signature, cell_format)
+		worksheet.write(row, 4, remarkname, cell_format)
 		row += 1
 	workbook.close()
 	Filename = "friendslist.xlsx"

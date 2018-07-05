@@ -3,7 +3,7 @@ import http.cookiejar
 import time
 import json
 import os
-
+import random
 try:
 	import xlsxwriter
 except:
@@ -76,10 +76,16 @@ def exportContect(_contactsList, _exportFileName = "export.xlsx"):
 		sheetdata.append([person["UserName"], person["RemarkName"] or person["NickName"], person["Sex"], person["Province"]+person["City"]])
 	row = 0
 	for username, remakename, sex, city in sheetdata:
-		worksheet.write(row, 0, username)
-		worksheet.write(row, 1, remakename)
-		worksheet.write(row, 2, sex)
-		worksheet.write(row, 3, city)
+		cell_format = workbook.add_format()
+		cell_format.set_pattern(1)  # This is optional when using a solid fill.
+		if row%2 == 0:
+			cell_format.set_bg_color('green')
+		else:
+			cell_format.set_bg_color('yellow')
+		worksheet.write(row, 0, username, cell_format)
+		worksheet.write(row, 1, remakename, cell_format)
+		worksheet.write(row, 2, sex, cell_format)
+		worksheet.write(row, 3, city, cell_format)
 		row += 1
 	workbook.close()
 

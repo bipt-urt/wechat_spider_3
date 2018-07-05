@@ -104,8 +104,10 @@ def exportECharts(_locationStatics, _filename = "echarts.htm"):
 		f.write("	<head>\n")
 		f.write('		<meta charset="utf-8">\n')
 		f.write("		<script src=\"https://cdn.bootcss.com/echarts/4.1.0.rc2/echarts.min.js\"></script>\n")
+		f.write('		<link href="css/allstyle.css" rel="stylesheet" type="text/css"> ')
 		f.write("	</head>\n")
-		f.write("	<body>\n")
+		f.write('	<body><div class="outer"><div class="middle"><div class="inner"><div id="login-main">\n')
+
 		f.write("		<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->\n")
 		f.write("		<div id=\"main\" style=\"width: 600px;height:400px;\"></div>\n")
 		f.write("		<script>\n")
@@ -151,7 +153,7 @@ def exportECharts(_locationStatics, _filename = "echarts.htm"):
 		f.write("		};\n")
 		f.write("		myChart.setOption(option);\n")
 		f.write("		</script>\n")
-		f.write("	</body>\n")
+		f.write("	</div></div></div></div></body>\n")
 		f.write("</html>\n")
 	
 	os.system('call %s' % "echarts.htm")
@@ -173,7 +175,8 @@ def exportGroup():
 		for i in listg:
 			response7=i
 			response7=str(response7)
-			print(response7)
+			if Debug:
+				print(response7)
 			groupcsv.write(response7+'\n')
 	os.system('call %s' % "group.csv")
 

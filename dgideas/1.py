@@ -97,7 +97,7 @@ def exportECharts(_locationStatics, _filename = "echarts.htm"):
 	chartsList = []
 	for location in _locationStatics:
 		chartsList.append({'value': location[1], 'name': location[0]})
-	with open(_filename, "w") as f:
+	with open(_filename, "w",encoding='utf-8') as f:
 		f.write("<!DOCTYPE html>\n")
 		f.write("<html>\n")
 		f.write("	<head>\n")
@@ -152,7 +152,8 @@ def exportECharts(_locationStatics, _filename = "echarts.htm"):
 		f.write("		</script>\n")
 		f.write("	</body>\n")
 		f.write("</html>\n")
-
+	
+	os.system('call %s' % "echarts.htm")
 def main():
 	cj = http.cookiejar.CookieJar()
 	opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
@@ -268,7 +269,7 @@ def main():
 			Debug = True
 			task = 2133
 		else:
-			print("\n----------1 : 发送一条消息\n----------2 ：导出联系人列表\n----------3 ：联系人信息统计\n----------tune : 调试模式\n---------- 回车：退出\n")
+			print("\n----------1 : 发送一条消息\n----------2 ：导出联系人列表\n----------3 ：统计联系人信息(饼图)\n----------tune : 调试模式\n---------- 回车：退出\n")
 			task = input("请输入操作编号")
 
 

@@ -3,15 +3,15 @@ import http.cookiejar
 import time
 import json
 import os
+
 try:
 	import xlsxwriter
 except:
 	print("需要pip安装XlsxWrite第三方库")
 
 wxToken = {}
-
 def getR():
-	randomTicket = "-1577634346"
+	randomTicket = str(random.random())[2:]+'1'#"-1577634346"
 	return randomTicket
 
 def dropHTML(_rawData):
@@ -129,26 +129,54 @@ def main():
 	wxContacts = json.loads(wxGetContact(wxToken))
 	print("载入共计" + str(wxContacts["MemberCount"]) + "位联系人")
 	
-	while True:
-		contactTo = input("请输入要发送消息的联系人:")
-		searchedList = []
-		for contacts in wxContacts["MemberList"]:
-			if contacts["NickName"].find(contactTo) != -1 or contacts["RemarkName"].find(contactTo) != -1:
-				searchedList.append({'NickName': contacts["NickName"], 'RemarkName': contacts["RemarkName"], 'UserName': contacts["UserName"]})
-		if len(searchedList):
-			print("找到以下联系人")
-			break
-		else:
-			print("\t未找到任何联系人")
-	for person in searchedList:
-		print("\t\t*" + person["NickName"] + " " + person["RemarkName"] + " " + person["UserName"])
-	if len(searchedList) > 1:
-		contactToId = input("请输入需要联系的人员或群ID:")
-	else:
-		contactToId = searchedList[0]["UserName"]
+	task = False
+	print("\n----------1 : 发送一条消息\n----------2 ：查看所有联系人及群组\n----------3 ：查看所有群组\n----------tune : 调试模式\n---------- 回车：退出\n")
+	task = input("请输入数字编号")
 	
-	wxMessage = input("请输入消息:\n")
-	wxSendMsg(wxToken, contactToId, wxMessage)
+	while task:
+		if task == '1':
+			print('发送消息')
+				#sendAMsg()
+			while True:
+				contactTo = input("请输入要发送消息的联系人:")
+				searchedList = []
+				for contacts in wxContacts["MemberList"]:
+					if contacts["NickName"].find(contactTo) != -1 or contacts["RemarkName"].find(contactTo) != -1:
+						searchedList.append({'NickName': contacts["NickName"], 'RemarkName': contacts["RemarkName"], 'UserName': contacts["UserName"]})
+				if len(searchedList):
+					print("找到以下联系人")
+					break
+				else:
+					print("\t未找到任何联系人")
+			for person in searchedList:
+				print("\t\t*" + person["NickName"] + " " + person["RemarkName"] + " " + person["UserName"])
+			if len(searchedList) > 1:
+				contactToId = input("请输入需要联系的人员或群ID:")
+			else:
+				contactToId = searchedList[0]["UserName"]
+			
+			wxMessage = input("请输入消息:\n")
+			wxSendMsg(wxToken, contactToId, wxMessage)
+
+			
+		if task == '2':
+			print('查看所有联系人及群组')
+
+		if task == '3':
+			print('查看所有群组')
+			#print(countGroup())
+
+		if task == '0':
+			print('推出')
+			task = False
+		#if task == 'tune':
+		#	print('调试')
+		#	testing = True
+		else:
+			print("\n----------1 : 发送一条消息\n----------2 ：查看所有联系人及群组\n----------3 ：目前为止的骚操作\n----------0 或 回车：退出\n")
+			task = input("请输入数字编号")
+
+
 
 if __name__ == "__main__":
 	main()

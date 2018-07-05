@@ -4,6 +4,7 @@ import time
 import json
 import os
 import random
+
 try:
 	import xlsxwriter
 except:
@@ -88,6 +89,9 @@ def exportContect(_contactsList, _exportFileName = "friendslist.xlsx"):
 		worksheet.write(row, 3, city, cell_format)
 		row += 1
 	workbook.close()
+	Filename = "friendslist.xlsx"
+	os.system('call %s' % Filename)
+
 
 def exportECharts(_locationStatics, _filename = "echarts.htm"):
 	chartsList = []
@@ -168,7 +172,7 @@ def main():
 	with open(QRCodeFilename, "wb") as QRCode:
 		QRCode.write(wxGetQRCode(wxToken["loginQRToken"]))
 	print("已生成二维码图片" + str(QRCodeFilename) + "，请使用手机扫描")
-	time.sleep(2)
+	time.sleep(1)
 	os.system('call %s' % QRCodeFilename)
 
 	while True:
@@ -261,7 +265,8 @@ def main():
 			task = False
 		if task == 'tune':
 			print('调试')
-			wer = True
+			Debug = True
+			task = 2133
 		else:
 			print("\n----------1 : 发送一条消息\n----------2 ：导出联系人列表\n----------3 ：联系人信息统计\n----------tune : 调试模式\n---------- 回车：退出\n")
 			task = input("请输入操作编号")

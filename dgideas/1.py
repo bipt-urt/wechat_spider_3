@@ -154,7 +154,32 @@ def exportECharts(_locationStatics, _filename = "echarts.htm"):
 		f.write("</html>\n")
 	
 	os.system('call %s' % "echarts.htm")
+
+def exportGroup():
+	listg = []
+	with open('data.csv','r', encoding="gb18030") as f:
+		for line in f:
+			row = []
+			if line.find("@@") == -1:
+				continue
+			line = line.split(",")
+			for element in line:
+				row.append(element)
+			listg.append(row)
+	if Debug:
+		print(list7)
+	with open("group.csv","w",encoding="gb18030",newline="") as groupcsv:
+		for i in listg:
+			response7=i
+			response7=str(response7)
+			print(response7)
+			groupcsv.write(response7+'\n')
+	os.system('call %s' % "group.csv")
+
+
 def main():
+	global Debug
+	Debug = False
 	cj = http.cookiejar.CookieJar()
 	opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
 	opener.addheaders = [('User-agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0'),
@@ -262,8 +287,9 @@ def main():
 			exportECharts(locationStatic)
 			#print(countGroup())
 
-		if task == '0':
-			print('退出')
+		if task == '4':
+			print('导出群组信息')
+			exportGroup()
 			task = False
 		if task == 'tune':
 			print('调试')
@@ -277,24 +303,3 @@ def main():
 
 if __name__ == "__main__":
 	main()
-
-
-list7 = []
-with open('data.csv','r', encoding="gb18030") as f:
-	for line in f:
-		row = []
-		if line.find("@@") == -1:
-			continue
-		line = line.split(",")
-		for element in line:
-			row.append(element)
-		list7.append(row)
-#print(list7)
-
-
-with open("group.csv","w",encoding="gb18030",newline="") as groupcsv:
-	for i in list7:
-		response7=i
-		response7=str(response7)
-		print(response7)
-		groupcsv.write(response7+'\n')
